@@ -33,7 +33,7 @@ func GetAllBooks() map[string]Book {
 func GetBookDetails(id string) (string, error) {
 	for _, book := range Books {
 		if book.ID == id {
-			details := fmt.Sprintf("Title: %s, ID: %s", book.Title, book.ID)
+			details := fmt.Sprintf("Title: %s, ID: %s, Price: %d $", book.Title, book.ID, NetPrice(book)/100)
 			return details, nil
 		}
 	}
@@ -62,4 +62,12 @@ func AddBook(b Book) {
 		authorIDs := Authors[a]
 		Authors[a] = append(authorIDs, b.ID)
 	}
+}
+
+//NetPrice receives a book with the price and discount information and returns
+// the net price
+func NetPrice(b Book) int64 {
+	saving := b.PriceCents * (int64(b.DiscountPercent / 100))
+
+	return b.PriceCents - saving
 }

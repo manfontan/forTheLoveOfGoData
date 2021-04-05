@@ -54,7 +54,7 @@ func TestGetBookDetails(t *testing.T) {
 	bookstore.AddBook(book1)
 	bookstore.AddBook(book2)
 
-	want := fmt.Sprintf("Title: %s, ID: %s", book2.Title, book2.ID)
+	want := fmt.Sprintf("Title: %s, ID: %s, Price: %d $", book2.Title, book2.ID, bookstore.NetPrice(book2))
 	got, error := bookstore.GetBookDetails(book2.ID)
 
 	if error != nil {
@@ -127,5 +127,21 @@ func TestAddBook(t *testing.T) {
 
 	if !cmp.Equal(want2, got2) {
 		t.Error(cmp.Diff(got2, want2))
+	}
+}
+
+func TestNetPrice(t *testing.T) {
+
+	book := bookstore.Book{
+		Title:           "The Little Price",
+		Author:          []string{"Antoine de Saint-Exupéry"},
+		DiscountPercent: 10,
+		PriceCents:      10000,
+	}
+	want := book.PriceCents - (book.PriceCents * (int64(book.DiscountPercent) / 100))
+	got := bookstore.NetPrice(book)
+
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
 	}
 }
